@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const signupSchema = z
   .object({
@@ -32,6 +33,7 @@ const signupSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
+    message: "Password does not match",
     path: ["confirmPassword"],
   });
 
@@ -205,7 +207,7 @@ export function SignupForm({
                   {isPending ? "Loading..." : "Create Account"}
                 </Button>
                 <FieldDescription className="text-center">
-                  Already have an account? <a href="#">Sign in</a>
+                  Already have an account? <Link href="/login">Sign in</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

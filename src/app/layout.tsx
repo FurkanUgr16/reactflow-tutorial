@@ -6,7 +6,10 @@ import { TRPCReactProvider } from "@/trpc/client";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -37,8 +40,8 @@ export default function RootLayout({
       >
         <TRPCReactProvider>
           <TooltipProvider>
-            <Toaster position="top-center" closeButton={true} />
             {children}
+            <Toaster position="top-center" closeButton={true} />
           </TooltipProvider>
         </TRPCReactProvider>
       </body>

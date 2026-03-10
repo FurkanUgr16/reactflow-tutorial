@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { cache } from "react";
 export const createTRPCContext = cache(async () => {
   /**

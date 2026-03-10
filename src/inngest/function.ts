@@ -20,33 +20,38 @@ export const execute = inngest.createFunction(
         system: "You are a helpfull assistant",
         prompt: "Write a vegetarian lasagna recipe for 4 people.",
         model: google("gemini-2.5-flash"),
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       },
     );
 
-    const { steps: openaiSteps } = await step.ai.wrap(
-      "openai-generate-text",
-      generateText,
-      {
-        system: "You are a helpfull assistant",
-        prompt: "Write a vegetarian lasagna recipe for 4 people.",
-        model: openai("gpt-5-mini-2025-08-07"),
-      },
-    );
+    // const { steps: openaiSteps } = await step.ai.wrap(
+    //   "openai-generate-text",
+    //   generateText,
+    //   {
+    //     system: "You are a helpfull assistant",
+    //     prompt: "Write a vegetarian lasagna recipe for 4 people.",
+    //     model: openai("gpt-5-mini-2025-08-07"),
+    //   },
+    // );
 
-    const { steps: anthropicSteps } = await step.ai.wrap(
-      "anthropic-generate-text",
-      generateText,
-      {
-        system: "You are a helpfull assistant",
-        prompt: "Write a vegetarian lasagna recipe for 4 people.",
-        model: anthropic("claude-sonnet-4-6"),
-      },
-    );
+    // const { steps: anthropicSteps } = await step.ai.wrap(
+    //   "anthropic-generate-text",
+    //   generateText,
+    //   {
+    //     system: "You are a helpfull assistant",
+    //     prompt: "Write a vegetarian lasagna recipe for 4 people.",
+    //     model: anthropic("claude-sonnet-4-6"),
+    //   },
+    // );
 
     return {
       geminiSteps,
-      openaiSteps,
-      anthropicSteps,
+      // openaiSteps,
+      // anthropicSteps,
     };
   },
 );

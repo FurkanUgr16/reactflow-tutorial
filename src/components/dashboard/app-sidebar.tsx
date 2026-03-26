@@ -51,10 +51,10 @@ const menuItem = [
 ];
 
 const AppSidebar = () => {
-  const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
   const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
+  const queryClient = useQueryClient();
 
   const logout = () => {
     authClient.signOut({
@@ -117,7 +117,7 @@ const AppSidebar = () => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {!hasActiveSubscription && isLoading && (
+          {!hasActiveSubscription && !isLoading && (
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip="Upgrade to Pro"

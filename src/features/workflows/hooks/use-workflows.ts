@@ -7,15 +7,18 @@ import {
 
 import { toast } from "sonner";
 
+import { useWorkflowsParams } from "./use-worklows-params";
+
 // Hook the fetch all workflows using suspense
 export const useSuspenseWorkflows = () => {
   const trpc = useTRPC();
-
-  return useSuspenseQuery(trpc.workflows.getMany.queryOptions());
+  const [params] = useWorkflowsParams();
+  return useSuspenseQuery(trpc.workflows.getMany.queryOptions(params));
 };
 
 // Hook to create workflow
 export const useCreateWorkflow = () => {
+  const [params] = useWorkflowsParams();
   const queryClient = useQueryClient();
   const trpc = useTRPC();
 
@@ -23,7 +26,7 @@ export const useCreateWorkflow = () => {
     trpc.workflows.create.mutationOptions({
       onSuccess: (data) => {
         toast.success(`Workflow ${data.name} created`);
-        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions());
+        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
       },
       onError: (error) => {
         toast.error(error.message);

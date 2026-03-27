@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/client";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -39,10 +40,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TRPCReactProvider>
-          <TooltipProvider>
-            {children}
-            <Toaster position="top-center" closeButton={true} />
-          </TooltipProvider>
+          <NuqsAdapter>
+            <TooltipProvider>
+              {children}
+              <Toaster position="top-center" closeButton={true} />
+            </TooltipProvider>
+          </NuqsAdapter>
         </TRPCReactProvider>
       </body>
     </html>

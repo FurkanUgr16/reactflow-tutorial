@@ -8,6 +8,7 @@ import {
 import { toast } from "sonner";
 
 import { useWorkflowsParams } from "./use-worklows-params";
+import { tr } from "date-fns/locale";
 
 // Hook the fetch all workflows using suspense
 export const useSuspenseWorkflows = () => {
@@ -18,7 +19,6 @@ export const useSuspenseWorkflows = () => {
 
 // Hook to create workflow
 export const useCreateWorkflow = () => {
-  const [params] = useWorkflowsParams();
   const queryClient = useQueryClient();
   const trpc = useTRPC();
 
@@ -49,6 +49,33 @@ export const useRemoveWorkflow = () => {
       },
       onError: (error) => {
         toast.error(error.message);
+      },
+    }),
+  );
+};
+
+// suspense one workflow
+export const useSuspenseWorkflow = (id: string) => {
+  const trpc = useTRPC();
+  return useSuspenseQuery(trpc.workflows.getOne.queryOptions({ id }));
+};
+
+// update workflow name
+export const useUpdateWorkflowName = () => {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflows.updateName.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(`Workflow ${data.name} updated`);
+        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
+        queryClient.invalidateQueries(
+          trpc.workflows.getOne.queryOptions({ id: data.id }),
+        );
+      },
+      onError: (error) => {
+        toast.error(`Failed to update workflows: ${error.message}`);
       },
     }),
   );

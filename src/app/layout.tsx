@@ -6,6 +6,7 @@ import { TRPCReactProvider } from "@/trpc/client";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -35,18 +36,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-mono", jetbrainsMono.variable)}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn("font-mono", jetbrainsMono.variable)}
+    >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TRPCReactProvider>
-          <NuqsAdapter>
-            <TooltipProvider>
-              {children}
-              <Toaster position="top-center" closeButton={true} />
-            </TooltipProvider>
-          </NuqsAdapter>
-        </TRPCReactProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TRPCReactProvider>
+            <NuqsAdapter>
+              <TooltipProvider>
+                {children}
+                <Toaster position="top-center" closeButton={true} />
+              </TooltipProvider>
+            </NuqsAdapter>
+          </TRPCReactProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

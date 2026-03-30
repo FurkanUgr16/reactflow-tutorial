@@ -18,6 +18,7 @@ import {
   useUpdateWorkflowName,
 } from "@/features/workflows/hooks/use-workflows";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/mode-toggle";
 
 type WorkflowId = {
   workflowId: string;
@@ -29,7 +30,10 @@ const EditorHeader = ({ workflowId }: WorkflowId) => {
       <SidebarTrigger className="ml-1" />
       <div className="flex flex-row items-center justify-between gap-x-4 w-full">
         <EditorBreadcrumbs workflowId={workflowId} />
-        <EditorSaveButton workflowId={workflowId} />
+        <div className="flex items-center gap-x-4 ">
+          <EditorSaveButton workflowId={workflowId} />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

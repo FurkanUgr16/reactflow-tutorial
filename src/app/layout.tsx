@@ -7,6 +7,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Provider } from "jotai";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -53,8 +54,10 @@ export default function RootLayout({
           <TRPCReactProvider>
             <NuqsAdapter>
               <TooltipProvider>
-                {children}
-                <Toaster position="top-center" closeButton={true} />
+                <Provider>
+                  {children}
+                  <Toaster position="top-center" closeButton={true} />
+                </Provider>
               </TooltipProvider>
             </NuqsAdapter>
           </TRPCReactProvider>

@@ -1,39 +1,37 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Loader2Icon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
 
 export const ThemeToggle = () => {
-  const [mounted, setMounted] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) {
-    return (
-      <Button
-        variant={"outline"}
-        size={"icon-lg"}
-        disabled
-        className="opacity-0"
-      >
-        <Sun />
-      </Button>
-    );
+    <Button
+      disabled
+      variant={"ghost"}
+      size={"icon-lg"}
+      className="hover:cursor-not-allowed"
+    >
+      <Loader2Icon />
+    </Button>;
   }
 
   return (
     <Button
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
       variant={"ghost"}
       size={"icon-lg"}
       className="hover:cursor-pointer"
     >
-      {resolvedTheme === "dark" ? <Sun /> : <Moon />}
+      {resolvedTheme === "light" ? <Moon /> : <Sun />}
     </Button>
   );
 };

@@ -44,24 +44,20 @@ type ManualTriggerDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: z.infer<typeof formSchema>) => void;
-  defaultEndpoint?: string;
-  defaultMethod?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  defaultBody?: string;
+  defaultValues?: Partial<FormValues>;
 };
 
 export const HTTPRequestDialog = ({
   open,
   onOpenChange,
   onSubmit,
-  defaultEndpoint = "",
-  defaultBody = "",
-  defaultMethod = "GET",
+  defaultValues = {},
 }: ManualTriggerDialogProps) => {
   const form = useForm({
     defaultValues: {
-      endpoint: defaultEndpoint,
-      method: defaultMethod,
-      body: defaultBody,
+      endpoint: defaultValues.endpoint,
+      method: defaultValues.method,
+      body: defaultValues.body,
     } as FormValues,
 
     validators: {
@@ -76,12 +72,12 @@ export const HTTPRequestDialog = ({
   useEffect(() => {
     if (open) {
       form.reset({
-        endpoint: defaultEndpoint,
-        method: defaultMethod,
-        body: defaultBody,
+        endpoint: defaultValues.endpoint || "",
+        method: defaultValues.method || "GET",
+        body: defaultValues.body || "",
       });
     }
-  }, [open, defaultEndpoint, defaultMethod, defaultBody, form]);
+  }, [open, defaultValues, form]);
 
   const method = useStore(form.store, (state) => state.values.method);
   const showBodyField = ["POST", "PUT", "PATCH"].includes(method);

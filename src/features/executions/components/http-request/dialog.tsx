@@ -32,6 +32,13 @@ import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
+  variableName: z
+    .string()
+    .min(1, { message: "Variable name is required" })
+    .regex(/^[A-Za-z_$][A-Za-z-0-9_$]*$/, {
+      message:
+        "Variable name must start with a letter or underscore and contain only letters, numbers or underscores",
+    }),
   endpoint: z.url({ message: "Please enter a valid url" }),
   method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
   body: z.string().optional(),
@@ -58,6 +65,7 @@ export const HTTPRequestDialog = ({
       endpoint: defaultValues.endpoint,
       method: defaultValues.method,
       body: defaultValues.body,
+      variableName: defaultValues.variableName,
     } as FormValues,
 
     validators: {
@@ -75,10 +83,15 @@ export const HTTPRequestDialog = ({
         endpoint: defaultValues.endpoint || "",
         method: defaultValues.method || "GET",
         body: defaultValues.body || "",
+        variableName: defaultValues.variableName || "",
       });
     }
   }, [open, defaultValues, form]);
 
+  const watchVariableName = useStore(
+    form.store,
+    (state) => state.values.variableName || "myApiCall",
+  );
   const method = useStore(form.store, (state) => state.values.method);
   const showBodyField = ["POST", "PUT", "PATCH"].includes(method);
   return (
@@ -98,6 +111,33 @@ export const HTTPRequestDialog = ({
           }}
         >
           <FieldGroup>
+            <form.Field
+              name="variableName"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Variable Name</FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="myApiCall"
+                      autoComplete="off"
+                    />
+                    <FieldDescription>
+                      "Use this name to reference the result in other nodes:{" "}
+                      {`{{${watchVariableName}.httpResponse.data}}`}
+                    </FieldDescription>
+                    <FieldError errors={field.state.meta.errors} />
+                  </Field>
+                );
+              }}
+            />
             <form.Field
               name="method"
               children={(field) => {

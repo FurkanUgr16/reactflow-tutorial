@@ -1,9 +1,9 @@
 import type { NodeExecutor } from "@/features/executions/types";
 import { manualTriggerChannel } from "@/inngest/channels/manual-trigger";
 
-type ManualTriggerDara = Record<string, unknown>;
+type ManualTriggerData = Record<string, unknown>;
 
-export const manualTriggerExecutor: NodeExecutor<ManualTriggerDara> = async ({
+export const manualTriggerExecutor: NodeExecutor<ManualTriggerData> = async ({
   data,
   nodeId,
   context,

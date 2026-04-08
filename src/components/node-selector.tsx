@@ -36,6 +36,12 @@ const triggerNodes: NodeTypeOption[] = [
       "Runs the flow on the clicking button. Good for getting started quickly",
     icon: MousePointerIcon,
   },
+  {
+    type: NodeType.GOOGLE_FORM_TRIGGER,
+    label: "Google Form",
+    description: "Runs the flow when the google form submitting",
+    icon: "/logos/googleform.svg",
+  },
 ];
 
 const executionNodes: NodeTypeOption[] = [
@@ -130,6 +136,8 @@ export const NodeSelector = ({
                       src={Icon}
                       alt={nodeType.label}
                       className="size-5 object-contain rounded-sm"
+                      width={16}
+                      height={16}
                     />
                   ) : (
                     <Icon className="size-5 object-contain rounded-sm" />
@@ -164,6 +172,8 @@ export const NodeSelector = ({
                       src={Icon}
                       alt={nodeType.label}
                       className="size-5 object-contain rounded-sm"
+                      width={16}
+                      height={16}
                     />
                   ) : (
                     <Icon className="size-5 object-contain rounded-sm" />

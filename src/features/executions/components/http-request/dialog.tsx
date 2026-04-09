@@ -30,6 +30,7 @@ import z from "zod";
 import { useForm } from "@tanstack/react-form";
 import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   variableName: z
@@ -96,7 +97,9 @@ export const HTTPRequestDialog = ({
   const showBodyField = ["POST", "PUT", "PATCH"].includes(method);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent
+        className={cn(showBodyField && "max-h-[90vh] overflow-y-auto")}
+      >
         <DialogHeader>
           <DialogTitle>HTTP Request</DialogTitle>
           <DialogDescription>

@@ -35,7 +35,7 @@ export const WorkflowsSearch = () => {
     <EntitySearch
       value={searchValue}
       onChange={onSearchChange}
-      placeholder="Search Workflows"
+      placeholder="Search workflows"
     />
   );
 };
@@ -75,9 +75,9 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
       {modal}
       <EntityHeader
         title="Worklfows"
-        description="Create nad manage your workflows"
+        description="Create and manage your workflows"
         onNew={handleCreate}
-        newButtonLabel="New Workflow"
+        newButtonLabel="New workflow"
         isCreating={false}
         disabled={createWorkflow.isPending}
       />
@@ -121,7 +121,7 @@ export const WorkflowsContainer = ({
 
 // loading
 export const WorkflowsLoading = () => {
-  return <LoadingView message="Loading workflows" />;
+  return <LoadingView message="Loading workflows..." />;
 };
 
 // error

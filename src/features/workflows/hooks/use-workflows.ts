@@ -29,7 +29,7 @@ export const useCreateWorkflow = () => {
         queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
       },
       onError: (error) => {
-        toast.error(error.message);
+        toast.error(`Failed to create workflow: ${error.message}`);
       },
     }),
   );
@@ -48,7 +48,7 @@ export const useRemoveWorkflow = () => {
         queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
       },
       onError: (error) => {
-        toast.error(error.message);
+        toast.error(`Failed to delete workflow: ${error.message}`);
       },
     }),
   );
@@ -75,7 +75,7 @@ export const useUpdateWorkflowName = () => {
         );
       },
       onError: (error) => {
-        toast.error(`Failed to update workflows: ${error.message}`);
+        toast.error(`Failed to update workflow name: ${error.message}`);
       },
     }),
   );
@@ -96,7 +96,7 @@ export const useUpdateWorkflow = () => {
         );
       },
       onError: (error) => {
-        toast.error(`Failed to saved workflows: ${error.message}`);
+        toast.error(`Failed to save workflow: ${error.message}`);
       },
     }),
   );

@@ -30,6 +30,9 @@ import z from "zod";
 import { useForm } from "@tanstack/react-form";
 import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
+import { CredentialType } from "@/generated/prisma/enums";
+import Image from "next/image";
+import { useCredentialByType } from "@/features/credentials/hooks/use-credentials";
 
 export const AVAILABLE_MODELS = [
   "gpt-4.1-nano",
@@ -53,6 +56,7 @@ const formSchema = z.object({
         "Variable name must start with a letter or underscore and contain only letters, numbers or underscores",
     }),
   model: z.enum(AVAILABLE_MODELS),
+  credentialId: z.string().min(1, "Credential is Required"),
   systemPrompt: z.string().optional(),
   userPrompt: z.string().min(1, "User prompt is required"),
   //.refine(),
@@ -73,12 +77,16 @@ export const OpenAIDialog = ({
   onSubmit,
   defaultValues = {},
 }: OpenAIProps) => {
+  const { data: credentials, isLoading: isLoadingCredentials } =
+    useCredentialByType(CredentialType.OPENAI);
+
   const form = useForm({
     defaultValues: {
       model: defaultValues.model || AVAILABLE_MODELS[0],
       systemPrompt: defaultValues.systemPrompt || "",
       userPrompt: defaultValues.userPrompt || "",
       variableName: defaultValues.variableName || "",
+      credentialId: defaultValues.credentialId || "",
     } as OpenAIValues,
 
     validators: {
@@ -97,6 +105,7 @@ export const OpenAIDialog = ({
         systemPrompt: defaultValues.systemPrompt || "",
         userPrompt: defaultValues.userPrompt || "",
         variableName: defaultValues.variableName || "",
+        credentialId: defaultValues.credentialId || "",
       });
     }
   }, [open, defaultValues, form]);
@@ -149,6 +158,49 @@ export const OpenAIDialog = ({
               );
             }}
           />
+
+          <form.Field
+            name="credentialId"
+            children={(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+              return (
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>
+                    Open AI Credential
+                  </FieldLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      field.handleChange(value as CredentialType);
+                    }}
+                    defaultValue={field.state.value}
+                    disabled={isLoadingCredentials || !credentials?.length}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a credentials" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {credentials?.map((credential) => (
+                        <SelectItem key={credential.id} value={credential.id}>
+                          <div className="flex items-center gap-2">
+                            <Image
+                              src="/logos/openai.svg"
+                              alt="openai"
+                              width={16}
+                              height={16}
+                            />
+                            {credential.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldError errors={field.state.meta.errors} />
+                </Field>
+              );
+            }}
+          />
+
           <FieldGroup>
             <form.Field
               name="model"

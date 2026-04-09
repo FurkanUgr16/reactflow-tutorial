@@ -12,10 +12,10 @@ Handlebars.registerHelper("json", (context) => {
 });
 
 type HttpRequestData = {
-  endpoint: string;
-  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  endpoint?: string;
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
-  variableName: string;
+  variableName?: string;
 };
 
 export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
@@ -32,45 +32,45 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
     }),
   );
 
-  if (!data.endpoint) {
-    // todo publish error state
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error",
-      }),
-    );
-
-    throw new NonRetriableError("HTTP Request node: No endpoit configured");
-  }
-
-  if (!data.variableName) {
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error",
-      }),
-    );
-
-    throw new NonRetriableError(
-      "HTTP Request node: Variable name not configured",
-    );
-  }
-
-  if (!data.method) {
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error",
-      }),
-    );
-    throw new NonRetriableError("HTTP Request node: Method not configured");
-  }
   try {
     const result = await step.run("http-request", async () => {
+      if (!data.endpoint) {
+        // todo publish error state
+        await publish(
+          httpRequestChannel().status({
+            nodeId,
+            status: "error",
+          }),
+        );
+
+        throw new NonRetriableError("HTTP Request node: No endpoit configured");
+      }
+
+      if (!data.variableName) {
+        await publish(
+          httpRequestChannel().status({
+            nodeId,
+            status: "error",
+          }),
+        );
+
+        throw new NonRetriableError(
+          "HTTP Request node: Variable name not configured",
+        );
+      }
+
+      if (!data.method) {
+        await publish(
+          httpRequestChannel().status({
+            nodeId,
+            status: "error",
+          }),
+        );
+        throw new NonRetriableError("HTTP Request node: Method not configured");
+      }
+
       const endpoint = Handlebars.compile(data.endpoint)(context);
       const method = data.method;
-
       const options: KYOptions = { method };
 
       if (["POST", "PUT", "PATCH"].includes(method)) {

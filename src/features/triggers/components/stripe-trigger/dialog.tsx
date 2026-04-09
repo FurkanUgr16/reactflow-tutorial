@@ -13,24 +13,23 @@ import { Label } from "@/components/ui/label";
 import { CopyIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { generateGoogleFormScript } from "./utils";
 
-type GoogleFormDialogProps = {
+type StripeTriggerDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export const GoogleFormTriggerDialog = ({
+export const StripeTriggerDialog = ({
   open,
   onOpenChange,
-}: GoogleFormDialogProps) => {
+}: StripeTriggerDialogProps) => {
   const params = useParams();
   const workflowId = params.workflowId as string;
 
   // construct the webhook url
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const webhookUrl = `${baseUrl}/api/webhooks/google-form?workflowId=${workflowId}`;
+  const webhookUrl = `${baseUrl}/api/webhooks/stripe?workflowId=${workflowId}`;
 
   const copyToClipboard = async () => {
     try {
@@ -45,10 +44,10 @@ export const GoogleFormTriggerDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Google Form Trigger Configuration</DialogTitle>
+          <DialogTitle>Stripe Trigger Configuration</DialogTitle>
           <DialogDescription>
-            Use this webhook URL in Google Form's Apps Script to tirgger this
-            workflow when a form is submitted
+            Configure this webhook URL in your Stripe Dashboard to trigger this
+            workflow on payment events
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -75,39 +74,15 @@ export const GoogleFormTriggerDialog = ({
           <div className="rounded-lg bg-muted p-4 space-y-2">
             <h4 className="font-medium text-sm">Setup instructions</h4>
             <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Open Your Google Form</li>
-              <li>Click the tree dots menu {"->"} Sricpt editor</li>
-              <li>Copy and paste the script below</li>
-              <li>Replace WEBHOOK_URL with your webhook URL above</li>
-              <li>Save and click "Triggers" {"->"} Add Trigger</li>
+              <li>Open Your Stripe Dashboard</li>
+              <li>Go to developers {"->"} Webhooks</li>
+              <li>Click "Add endpoint"</li>
+              <li>Paste the webhook URL in above</li>
               <li>
-                Choose: Form form {"->"} On form submit {"->"} Save
+                Select events to listen for (e.g., payment_intent_succeeded)
               </li>
+              <li>Save and copy the signing secret</li>
             </ol>
-          </div>
-          <div className="rounded-lg bg-muted p-4 space-y-3">
-            <h4 className="font-medium text-sm">Google Apps Scripts:</h4>
-            <Button
-              type="button"
-              variant={"outline"}
-              onClick={async () => {
-                const script = generateGoogleFormScript(webhookUrl);
-                try {
-                  await navigator.clipboard.writeText(script);
-                  toast.success("Script copied to clipboard");
-                } catch (error) {
-                  toast.error(
-                    `Failed to copy the script: ${(error as Error).message}`,
-                  );
-                }
-              }}
-            >
-              <CopyIcon className="size-4 mr-2" />
-              Copy Google Apps Script
-            </Button>
-            <p className="text-xs text-muted-foreground">
-              This script includes your webhook URL and handle form submissions
-            </p>
           </div>
 
           <div className="rounded-lg bg-muted p-4 space-y-2">
@@ -115,21 +90,27 @@ export const GoogleFormTriggerDialog = ({
             <ul className="text-sm text-muted-foreground space-y-1">
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{googleForm.respondentEmail}}"} <br />
+                  {"{{stripe.amount}}"} <br />
                 </code>
-                - Respondent's Email
+                - Payment amount
               </li>
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{googleForm.responses['Question Name']}}"} <br />
+                  {"{{stripe.currency}}"} <br />
                 </code>
-                - Specific Answer
+                - Currency code
               </li>
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{json googleForm.responses}}"} <br />
+                  {"{{stripe.customerId}}"} <br />
                 </code>
-                - All responses as JSON
+                - Customer ID
+              </li>
+              <li>
+                <code className="bg-background px-1 py-0.5 rounded">
+                  {"{{json stripe}}"} <br />
+                </code>
+                - Full event data as JSON
               </li>
             </ul>
           </div>

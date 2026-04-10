@@ -131,77 +131,77 @@ export const OpenAIDialog = ({
             form.handleSubmit();
           }}
         >
-          <form.Field
-            name="variableName"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Variable Name</FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    placeholder="openai"
-                    autoComplete="off"
-                  />
-                  <FieldDescription>
-                    "Use this name to reference the result in other nodes:{" "}
-                    {`{{${watchVariableName}.aiResponse}}`}
-                  </FieldDescription>
-                  <FieldError errors={field.state.meta.errors} />
-                </Field>
-              );
-            }}
-          />
-
-          <form.Field
-            name="credentialId"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>
-                    Open AI Credential
-                  </FieldLabel>
-                  <Select
-                    onValueChange={(value) => {
-                      field.handleChange(value as CredentialType);
-                    }}
-                    defaultValue={field.state.value}
-                    disabled={isLoadingCredentials || !credentials?.length}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a credentials" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {credentials?.map((credential) => (
-                        <SelectItem key={credential.id} value={credential.id}>
-                          <div className="flex items-center gap-2">
-                            <Image
-                              src="/logos/openai.svg"
-                              alt="openai"
-                              width={16}
-                              height={16}
-                            />
-                            {credential.name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FieldError errors={field.state.meta.errors} />
-                </Field>
-              );
-            }}
-          />
-
           <FieldGroup>
+            <form.Field
+              name="variableName"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Variable Name</FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="openai"
+                      autoComplete="off"
+                    />
+                    <FieldDescription>
+                      "Use this name to reference the result in other nodes:{" "}
+                      {`{{${watchVariableName}.aiResponse}}`}
+                    </FieldDescription>
+                    <FieldError errors={field.state.meta.errors} />
+                  </Field>
+                );
+              }}
+            />
+
+            <form.Field
+              name="credentialId"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Open AI Credential
+                    </FieldLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        field.handleChange(value as CredentialType);
+                      }}
+                      defaultValue={field.state.value}
+                      disabled={isLoadingCredentials || !credentials?.length}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a credentials" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {credentials?.map((credential) => (
+                          <SelectItem key={credential.id} value={credential.id}>
+                            <div className="flex items-center gap-2">
+                              <Image
+                                src="/logos/openai.svg"
+                                alt="openai"
+                                width={16}
+                                height={16}
+                              />
+                              {credential.name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FieldError errors={field.state.meta.errors} />
+                  </Field>
+                );
+              }}
+            />
+
             <form.Field
               name="model"
               children={(field) => {

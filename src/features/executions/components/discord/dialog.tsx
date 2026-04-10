@@ -17,31 +17,13 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import z from "zod";
-
 import { useForm } from "@tanstack/react-form";
 import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useCredentialByType } from "@/features/credentials/hooks/use-credentials";
 import { CredentialType } from "@/generated/prisma/enums";
-import Image from "next/image";
-
-export const AVAILABLE_MODELS = [
-  "gemini-2.5-flash",
-  "gemini-2.5",
-  "gemini-2.5-pro",
-  "gemini-3.1-flash-lite-preview",
-  "gemini-3-flash-preview",
-  "gemini-3.1-pro-preview",
-] as const;
 
 const formSchema = z.object({
   variableName: z
@@ -51,39 +33,40 @@ const formSchema = z.object({
       message:
         "Variable name must start with a letter or underscore and contain only letters, numbers or underscores",
     }),
-  model: z.enum(AVAILABLE_MODELS),
-  credentialId: z.string().min(1, "Credential is Required"),
-  systemPrompt: z.string().optional(),
-  userPrompt: z.string().min(1, "User prompt is required"),
+  username: z.string().optional(),
+  content: z
+    .string()
+    .min(1, "Message content is required")
+    .max(2000, "Discord messages can be exceed 2000 characters"),
+  webhookUrl: z.string().min(1, "Webhook URL is required"),
   //.refine(),
 });
 
-export type GeminiFormValues = z.infer<typeof formSchema>;
+export type DiscordFormValues = z.infer<typeof formSchema>;
 
-type GeminiProps = {
+type DiscordProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: z.infer<typeof formSchema>) => void;
-  defaultValues?: Partial<GeminiFormValues>;
+  defaultValues?: Partial<DiscordFormValues>;
 };
 
-export const GeminiDialog = ({
+export const DiscordDialog = ({
   open,
   onOpenChange,
   onSubmit,
   defaultValues = {},
-}: GeminiProps) => {
+}: DiscordProps) => {
   const { data: credentials, isLoading: isLoadingCredentials } =
     useCredentialByType(CredentialType.GEMINI);
 
   const form = useForm({
     defaultValues: {
-      model: defaultValues.model || AVAILABLE_MODELS[0],
-      systemPrompt: defaultValues.systemPrompt || "",
-      userPrompt: defaultValues.userPrompt || "",
       variableName: defaultValues.variableName || "",
-      credentialId: defaultValues.credentialId || "",
-    } as GeminiFormValues,
+      username: defaultValues.username || "",
+      content: defaultValues.content || "",
+      webhookUrl: defaultValues.webhookUrl || "",
+    } as DiscordFormValues,
 
     validators: {
       onSubmit: formSchema,
@@ -97,27 +80,26 @@ export const GeminiDialog = ({
   useEffect(() => {
     if (open) {
       form.reset({
-        model: defaultValues.model || AVAILABLE_MODELS[0],
-        systemPrompt: defaultValues.systemPrompt || "",
-        userPrompt: defaultValues.userPrompt || "",
         variableName: defaultValues.variableName || "",
-        credentialId: defaultValues.credentialId || "",
+        username: defaultValues.username || "",
+        content: defaultValues.content || "",
+        webhookUrl: defaultValues.webhookUrl || "",
       });
     }
   }, [open, defaultValues, form]);
 
   const watchVariableName = useStore(
     form.store,
-    (state) => state.values.variableName || "myApiCall",
+    (state) => state.values.variableName || "discord",
   );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Gemini</DialogTitle>
+          <DialogTitle>Discord Configuration</DialogTitle>
           <DialogDescription>
-            Configure the AI model and prompts for this node
+            Configure the Discord webhook settings for this node
           </DialogDescription>
         </DialogHeader>
         <form
@@ -143,7 +125,7 @@ export const GeminiDialog = ({
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
-                      placeholder="gemini"
+                      placeholder="discord"
                       autoComplete="off"
                     />
                     <FieldDescription>
@@ -157,76 +139,26 @@ export const GeminiDialog = ({
             />
 
             <form.Field
-              name="credentialId"
+              name="webhookUrl"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Gemini Credential
-                    </FieldLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        field.handleChange(value as CredentialType);
-                      }}
-                      defaultValue={field.state.value}
-                      disabled={isLoadingCredentials || !credentials?.length}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a credentials" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {credentials?.map((credential) => (
-                          <SelectItem key={credential.id} value={credential.id}>
-                            <div className="flex items-center gap-2">
-                              <Image
-                                src="/logos/gemini.svg"
-                                alt="gemini"
-                                width={16}
-                                height={16}
-                              />
-                              {credential.name}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FieldError errors={field.state.meta.errors} />
-                  </Field>
-                );
-              }}
-            />
-
-            <form.Field
-              name="model"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Model</FieldLabel>
-                    <Select
-                      onValueChange={(value) =>
-                        field.handleChange(
-                          value as (typeof AVAILABLE_MODELS)[number],
-                        )
-                      }
-                      defaultValue={field.state.value}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a model" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {AVAILABLE_MODELS.map((model) => (
-                          <SelectItem key={model} value={model}>
-                            {model}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FieldLabel htmlFor={field.name}>Webhook URL</FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="https://discord.com/api/webhooks"
+                      autoComplete="off"
+                    />
                     <FieldDescription>
-                      The Google Gemini Model to use for completion
+                      Get this from Discord: Channel Settings {"->"}{" "}
+                      Integrations {"->"} Webhooks
                     </FieldDescription>
                     <FieldError errors={field.state.meta.errors} />
                   </Field>
@@ -235,14 +167,14 @@ export const GeminiDialog = ({
             />
 
             <form.Field
-              name="systemPrompt"
+              name="content"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>
-                      System Prompt (Optional)
+                      Message Content
                     </FieldLabel>
                     <Textarea
                       className="min-h-20 font-mono text-sm"
@@ -252,13 +184,12 @@ export const GeminiDialog = ({
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
-                      placeholder="You are a helpfull assistant"
+                      placeholder="Summary: {{myGemini.text}}"
                       autoComplete="off"
                     />
                     <FieldDescription>
-                      Sets the behavior of assistant. Use {"{{variables}}"} for
-                      simple values or {"{{json variable}}"} to stringify
-                      objects
+                      The message to send. Use {"{{variables}}"} for simple
+                      values or {"{{json variable}}"} to stringify objects
                     </FieldDescription>
                     <FieldError errors={field.state.meta.errors} />
                   </Field>
@@ -267,27 +198,28 @@ export const GeminiDialog = ({
             />
 
             <form.Field
-              name="userPrompt"
+              name="username"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>User Prompt</FieldLabel>
-                    <Textarea
-                      className="min-h-30 font-mono text-sm"
+                    <FieldLabel htmlFor={field.name}>
+                      Bot Username (Optional)
+                    </FieldLabel>
+                    <Input
                       id={field.name}
                       name={field.name}
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
-                      placeholder="Summarize this text {{json httpResponse.data}}"
+                      placeholder="workflow bot"
                       autoComplete="off"
                     />
                     <FieldDescription>
-                      The prompt to send to AI. Use {"{{variables}}"} for simple
-                      values or {"{{json variable}}"} to stringify objects
+                      Get this from Discord: Channel Settings {"->"}{" "}
+                      Integrations {"->"} Webhooks
                     </FieldDescription>
                     <FieldError errors={field.state.meta.errors} />
                   </Field>

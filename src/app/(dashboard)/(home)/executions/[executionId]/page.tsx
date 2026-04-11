@@ -1,3 +1,13 @@
+import { ExecutionView } from "@/features/executions/components/execution";
+import {
+  ExecuitonLoading,
+  ExecutionError,
+} from "@/features/executions/components/executions";
+import { prefetchExecution } from "@/features/executions/server/prefetch";
+import { HydrateClient } from "@/trpc/server";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+
 type PageProps = {
   params: Promise<{
     executionId: string;
@@ -7,7 +17,21 @@ type PageProps = {
 const Page = async ({ params }: PageProps) => {
   const { executionId } = await params;
 
-  return <div>execution id: {executionId}</div>;
+  prefetchExecution(executionId);
+
+  return (
+    <div className="p-4 md:px-10 md:py-6 h-full">
+      <div className="mx-auto max-w-screen-md w-full flex flex-col gap-y-8 h-full">
+        <HydrateClient>
+          <ErrorBoundary fallback={<ExecutionError />}>
+            <Suspense fallback={<ExecuitonLoading />}>
+              <ExecutionView execuitonId={executionId} />
+            </Suspense>
+          </ErrorBoundary>
+        </HydrateClient>
+      </div>
+    </div>
+  );
 };
 
 export default Page;

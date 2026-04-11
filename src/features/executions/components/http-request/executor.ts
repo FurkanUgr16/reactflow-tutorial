@@ -35,7 +35,6 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
   try {
     const result = await step.run("http-request", async () => {
       if (!data.endpoint) {
-        // todo publish error state
         await publish(
           httpRequestChannel().status({
             nodeId,

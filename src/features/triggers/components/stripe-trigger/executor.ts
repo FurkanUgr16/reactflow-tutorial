@@ -10,7 +10,6 @@ export const stripeTriggerExecutor: NodeExecutor<StripeTriggerData> = async ({
   step,
   publish,
 }) => {
-  // TODO publish loading state for manual trigger
   await publish(
     stripeTriggerChannel().status({
       nodeId,
@@ -20,7 +19,6 @@ export const stripeTriggerExecutor: NodeExecutor<StripeTriggerData> = async ({
 
   const result = await step.run("stripe-trigger", async () => context);
 
-  // todo publish success state for manual trigger
   await publish(
     stripeTriggerChannel().status({
       nodeId,

@@ -6,6 +6,7 @@ import Handlebars from "handlebars";
 import { AVAILABLE_MODELS } from "./dialog";
 import { openaiChannel } from "@/inngest/channels/openai";
 import { prisma } from "@/db";
+import { decrypt } from "@/lib/encryption";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -56,7 +57,6 @@ export const openaiExecutor: NodeExecutor<OpenAIData> = async ({
     throw new NonRetriableError("Open AI  node: User prompt is missing");
   }
 
-  // TODO creadential is missing
   if (!data.credentialId) {
     await publish(
       openaiChannel().status({
@@ -93,7 +93,7 @@ export const openaiExecutor: NodeExecutor<OpenAIData> = async ({
   }
 
   const openai = createOpenAI({
-    apiKey: credential.value,
+    apiKey: decrypt(credential.value),
   });
 
   try {

@@ -6,6 +6,7 @@ import {
 } from "@/features/workflows/components/workflows";
 import { workflowsParamsLoader } from "@/features/workflows/server/loader";
 import { prefetchWorkflows } from "@/features/workflows/server/prefetch";
+import { requireAuth } from "@/lib/auth-utils";
 import { HydrateClient } from "@/trpc/server";
 import type { SearchParams } from "nuqs";
 import { Suspense } from "react";
@@ -16,6 +17,7 @@ type Props = {
 };
 
 const Workflows = async ({ searchParams }: Props) => {
+  await requireAuth();
   const params = await workflowsParamsLoader(searchParams);
   prefetchWorkflows(params);
 

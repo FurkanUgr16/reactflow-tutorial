@@ -4,6 +4,7 @@ import {
   CredentialLoading,
 } from "@/features/credentials/components/credentials";
 import { prefetchCredential } from "@/features/credentials/server/prefetch";
+import { requireAuth } from "@/lib/auth-utils";
 import { HydrateClient } from "@/trpc/server";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -15,6 +16,7 @@ type PageProps = {
 };
 
 const CredentialID = async ({ params }: PageProps) => {
+  await requireAuth();
   const { credentialId } = await params;
   prefetchCredential(credentialId);
   return (

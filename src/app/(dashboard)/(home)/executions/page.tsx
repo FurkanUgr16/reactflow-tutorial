@@ -6,6 +6,7 @@ import {
 } from "@/features/executions/components/executions";
 import { executionsParmasLoader } from "@/features/executions/server/params-loader";
 import { prefetchExecutions } from "@/features/executions/server/prefetch";
+import { requireAuth } from "@/lib/auth-utils";
 import { HydrateClient } from "@/trpc/server";
 
 import { SearchParams } from "nuqs";
@@ -17,6 +18,7 @@ type Props = {
 };
 
 const Execuitons = async ({ searhParams }: Props) => {
+  await requireAuth();
   const params = await executionsParmasLoader(searhParams);
   prefetchExecutions(params);
 
